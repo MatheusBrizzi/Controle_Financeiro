@@ -103,70 +103,7 @@ A API sobe por padrão em `http://localhost:8080`.
 
 O frontend é um único arquivo estático (`index.html`) que consome a API em `http://localhost:8080/api`. Basta abrir o arquivo diretamente no navegador ou servi-lo com um servidor estático:
 
-```bash
-# usando o módulo http.server do Python, por exemplo
-python3 -m http.server 5500
-```
 
-Depois acesse `http://localhost:5500`.
-
-> ⚠️ Como o frontend chama `http://localhost:8080` diretamente, o backend precisa ter **CORS habilitado** para a origem do frontend em ambiente de desenvolvimento.
-
----
-
-## 🔌 API — endpoints consumidos
-
-Endpoints atualmente utilizados pelo frontend (base: `http://localhost:8080/api`):
-
-| Método | Endpoint | Descrição | Cabeçalho |
-|---|---|---|---|
-| `POST` | `/usuarios` | Cria um novo usuário | — |
-| `POST` | `/auth/login` | Autentica e retorna o `usuarioId` | — |
-| `GET` | `/categorias` | Lista as categorias do usuário | `X-Usuario-Id` |
-| `POST` | `/categorias` | Cria uma nova categoria | `X-Usuario-Id` |
-| `GET` | `/transacoes` | Lista as transações do usuário | `X-Usuario-Id` |
-| `POST` | `/transacoes` | Registra uma nova transação | `X-Usuario-Id` |
-| `GET` | `/transacoes/saldo` | Retorna o saldo total do usuário | `X-Usuario-Id` |
-
-> A autenticação atual é feita via `usuarioId` enviado no cabeçalho `X-Usuario-Id`. Para produção, recomenda-se evoluir para um esquema baseado em token (JWT), evitando expor o identificador diretamente.
-
----
-
-## 🗂️ Modelo de dados
-
-**Usuário**
-```json
-{ "nome": "string", "emailPrincipal": "string", "senha": "string" }
-```
-
-**Categoria**
-```json
-{ "nome": "string", "descricao": "string", "tipo": "RECEITA | DESPESA" }
-```
-
-**Transação**
-```json
-{
-  "descricao": "string",
-  "valor": 0.0,
-  "data": "yyyy-mm-dd",
-  "tipo": "RECEITA | DESPESA",
-  "categoriaId": 0
-}
-```
-
----
-
-## 🗺️ Roadmap
-
-- [ ] Autenticação com token (JWT) em vez de `X-Usuario-Id`
-- [ ] Edição e exclusão de transações e categorias
-- [ ] Filtros de período no histórico (mês, ano, intervalo customizado)
-- [ ] Gráficos de gastos por categoria
-- [ ] Exportação do histórico (CSV / PDF)
-- [ ] Testes automatizados (frontend e backend)
-
----
 
 ## 🤝 Contribuindo
 
@@ -178,17 +115,11 @@ Contribuições são bem-vindas! Para contribuir:
 4. Envie para o seu fork (`git push origin feature/minha-feature`)
 5. Abra um Pull Request
 
----
 
-## 📄 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-
----
 
 ## 👤 Autor
 
-Desenvolvido por **[Seu Nome]**
+Desenvolvido por **[Matheus_Brizzi]**
 
 [![GitHub](https://img.shields.io/badge/GitHub-100000?style=flat&logo=github&logoColor=white)](https://github.com/seu-usuario)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=flat&logo=linkedin&logoColor=white)](https://linkedin.com/in/seu-usuario)
