@@ -77,7 +77,7 @@ O frontend é 100% estático (HTML, CSS e JavaScript puro, sem frameworks ou bui
 ### 1. Backend (Spring Boot)
 
 ```bash
-cd backend
+cd SEU_DIRETORIO
 ./mvnw spring-boot:run
 ```
 
