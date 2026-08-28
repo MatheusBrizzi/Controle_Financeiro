@@ -1,4 +1,4 @@
-# # 💰 Painel Financeiro
+ # 💰 Painel Financeiro
 
 Aplicação web para controle financeiro pessoal: cadastro de usuários, categorias de receitas/despesas, lançamento de transações e acompanhamento de saldo em tempo real.
 
@@ -7,7 +7,7 @@ Aplicação web para controle financeiro pessoal: cadastro de usuários, categor
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)
 ![Java](https://img.shields.io/badge/Java-ED8B00?style=flat&logo=openjdk&logoColor=white)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-6DB33F?style=flat&logo=springboot&logoColor=white)
-![License](https://img.shields.io/badge/license-MIT-informational)
+
 
 ---
 
@@ -76,16 +76,7 @@ O frontend é 100% estático (HTML, CSS e JavaScript puro, sem frameworks ou bui
 
 > O frontend não depende de nenhuma ferramenta de build (Webpack, Vite, npm, etc.) — é HTML puro, aberto direto no navegador ou servido por qualquer servidor estático.
 
----
 
-## 📁 Estrutura do projeto
-
-```
-painel-financeiro/
-├── index.html          # Frontend completo (HTML + CSS + JS)
-├── docs/                # Screenshots e materiais de apoio (opcional)
-└── backend/             # API em Java/Spring Boot
-```
 
 > Ajuste esta árvore para refletir a organização real do seu repositório (por exemplo, se o backend estiver em outro repositório separado).
 
