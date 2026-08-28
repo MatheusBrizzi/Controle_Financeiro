@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle Financeiro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💰</text></svg>">
+    <style>
+        /* ============================================================
+           TOKENS — identidade "livro-razão" (ledger): tinta verde-floresta,
+           papel verde-claro (sage mist) e destaque em ouro. Verde/terracota
+           reservados apenas ao significado de receita/despesa.
+           ============================================================ */
+        :root {
+            --ink-900: #122A21;
+            --ink-800: #1B3B2E;
+            --ink-700: #23493A;
+
+            --bg: #E9F0EA;
+            --card: #FFFFFF;
+            --card-alt: #F4F7F2;
+
+            --gold: #B98A2E;
+            --gold-dark: #92701F;
+            --gold-soft: #F3E6C7;
+
+            --emerald: #1E7D5C;
+            --emerald-soft: #DEF0E6;
+
+            --rust: #B65A3B;
+            --rust-soft: #F7E4DB;
+
+            --text: #16241D;
+            --muted: #6E8177;
+            --border: #DCE5DD;
+
+            --font-display: 'Fraunces', serif;
+            --font-body: 'Inter', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+
+            --radius-lg: 20px;
+            --radius-md: 14px;
+            --radius-sm: 10px;
+            --shadow-card: 0 2px 4px rgba(18, 42, 33, 0.04), 0 12px 28px rgba(18, 42, 33, 0.08);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg);
+            background-image: repeating-linear-gradient(
+                to bottom,
+                rgba(18, 42, 33, 0.035),
+                rgba(18, 42, 33, 0.035) 1px,
+                transparent 1px,
+                transparent 29px
+            );
+            color: var(--text);
+            min-height: 100vh;
+            padding: 32px 20px;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1, h2, h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.01em; }
+
+        button, input, select { font-family: inherit; }
+
+        ::selection { background: var(--gold-soft); color: var(--ink-900); }
+
+        a { color: inherit; }
+
+        /* Foco visível para acessibilidade */
+        button:focus-visible,
+        input:focus-visible,
+        select:focus-visible,
+        .tab-btn:focus-visible {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(185, 138, 46, 0.35);
+        }
+
+        .hidden { display: none !important; }
+
+        /* Ícones (feather-style, stroke, herdam a cor do texto) */
+        svg.icon { width: 18px; height: 18px; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; flex-shrink: 0; }
+
+        /* ============================================================
+           EMBLEMA DA MARCA
+           ============================================================ */
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-mark {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: linear-gradient(155deg, var(--ink-800), var(--ink-900));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gold-soft);
+            box-shadow: inset 0 0 0 1px rgba(243, 230, 199, 0.15);
+            flex-shrink: 0;
+        }
+
+        .brand-mark svg { width: 22px; height: 22px; stroke: currentColor; }
+
+        .brand-text .brand-title {
+            font-family: var(--font-display);
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--ink-900);
+            line-height: 1.1;
+        }
+
+        .brand-text .brand-sub {
+            font-size: 0.72rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        /* ============================================================
+           TELA DE AUTENTICAÇÃO
+           ============================================================ */
+        .auth-shell {
+            min-height: calc(100vh - 64px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            background: var(--card);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-card);
+        }
+
+        /* Painel decorativo esquerdo */
+        .auth-visual {
+            flex: 1 1 42%;
+            background:
+                radial-gradient(circle at 15% 15%, rgba(243, 230, 199, 0.10), transparent 45%),
+                linear-gradient(165deg, var(--ink-800), var(--ink-900));
+            color: #EAF3EC;
+            padding: 40px 36px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .auth-visual::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: repeating-linear-gradient(to bottom, rgba(234, 243, 236, 0.05), rgba(234, 243, 236, 0.05) 1px, transparent 1px, transparent 34px);
+            pointer-events: none;
+        }
+
+        .auth-visual .brand-mark { background: rgba(234, 243, 236, 0.08); box-shadow: inset 0 0 0 1px rgba(234, 243, 236, 0.25); }
+        .auth-visual .brand-text .brand-title { color: #F7F3E7; }
+        .auth-visual .brand-text .brand-sub { color: rgba(234, 243, 236, 0.6); }
+
+        .auth-visual .headline {
+            font-family: var(--font-display);
+            font-style: italic;
+            font-size: 1.55rem;
+            line-height: 1.35;
+            margin: 32px 0 10px;
+            color: #F7F3E7;
+            font-weight: 500;
+        }
+
+        .auth-visual .subline {
+            font-size: 0.9rem;
+            color: rgba(234, 243, 236, 0.65);
+            line-height: 1.55;
+            max-width: 34ch;
+        }
+
+        /* Ledger de exemplo — apenas ilustrativo */
+        .ledger-preview {
+            position: relative;
+            margin-top: 28px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(234, 243, 236, 0.14);
+            border-radius: var(--radius-md);
+            padding: 16px;
+        }
+
+        .ledger-preview .ledger-caption {
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: rgba(234, 243, 236, 0.45);
+            margin-bottom: 10px;
+        }
+
+        .ledger-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            padding: 7px 0;
+            border-bottom: 1px dashed rgba(234, 243, 236, 0.14);
+            color: rgba(234, 243, 236, 0.85);
+        }
+
+        .ledger-row:last-child { border-bottom: none; }
+        .ledger-row span.amt-in { color: #7FD9AE; }
+        .ledger-row span.amt-out { color: #E5A488; }
+
+        /* Formulários (login / cadastro) */
+        .auth-forms {
+            flex: 1 1 58%;
+            padding: 40px 40px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 4px;
+            background: var(--card-alt);
+            padding: 4px;
+            border-radius: 999px;
+            margin-bottom: 28px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            color: var(--muted);
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn.active {
+            background: var(--ink-900);
+            color: #F7F3E7;
+            box-shadow: 0 4px 10px rgba(18, 42, 33, 0.25);
+        }
+
+        .auth-forms h2 {
+            font-size: 1.4rem;
+            color: var(--ink-900);
+            margin-bottom: 4px;
+        }
+
+        .form-subtitle {
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin-bottom: 24px;
+        }
+
+        /* ============================================================
+           CAMPOS DE FORMULÁRIO (compartilhado auth + app)
+           ============================================================ */
+        .form-group { display: flex; flex-direction: column; gap: 16px; }
+
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+        .field { display: flex; flex-direction: column; gap: 6px; }
+
+        .field-label {
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+        }
+
+        .input-wrap { position: relative; display: flex; align-items: center; }
+
+        .input-wrap .icon {
+            position: absolute;
+            left: 14px;
+            color: var(--muted);
+            pointer-events: none;
+        }
+
+        .input-wrap .prefix {
+            position: absolute;
+            left: 14px;
+            font-family: var(--font-mono);
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--ink-800);
+            pointer-events: none;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 14px 12px 42px;
+            border-radius: var(--radius-sm);
+            border: 1.5px solid var(--border);
+            background-color: var(--card-alt);
+            color: var(--text);
+            font-size: 0.92rem;
+            outline: none;
+            transition: border-color 0.15s ease, background-color 0.15s ease;
+        }
+
+        input::placeholder { color: #A3B0A8; }
+
+        input:focus, select:focus {
+            border-color: var(--gold);
+            background-color: #fff;
+        }
+
+        .input-wrap.currency input { padding-left: 44px; font-family: var(--font-mono); font-weight: 600; }
+
+        select {
+            appearance: none;
+            -webkit-appearance: none;
+            padding-right: 38px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%236E8177' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            cursor: pointer;
+        }
+
+        .pwd-toggle {
+            position: absolute;
+            right: 10px;
+            background: none;
+            border: none;
+            padding: 6px;
+            cursor: pointer;
+            color: var(--muted);
+            display: flex;
+            border-radius: 8px;
+        }
+
+        .pwd-toggle:hover { color: var(--ink-800); }
+
+        button.btn-primary {
+            background: var(--ink-900);
+            color: #F7F3E7;
+            font-weight: 600;
+            padding: 13px;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: transform 0.15s ease, background 0.15s ease;
+        }
+
+        button.btn-primary:hover { background: var(--ink-800); transform: translateY(-1px); }
+        button.btn-primary:active { transform: translateY(0); }
+
+        /* ============================================================
+           APLICAÇÃO PRINCIPAL
+           ============================================================ */
+        .app-shell { width: 100%; display: flex; flex-direction: column; gap: 26px; }
+
+        /* Miolo centralizado: cabeçalho, métricas e formulários */
+        .dash-narrow {
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        .app-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1560px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        .card {
+            background-color: var(--card);
+            border-radius: var(--radius-lg);
+            padding: 26px;
+            box-shadow: var(--shadow-card);
+            border: 1px solid var(--border);
+        }
+
+        .card-head {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .card-head .icon-badge {
+            width: 32px;
+            height: 32px;
+            border-radius: 9px;
+            background: var(--card-alt);
+            color: var(--ink-800);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card-head h2 { font-size: 1.05rem; color: var(--ink-900); margin: 0; }
+
+        /* Cartões de métricas — lado a lado e centralizados */
+        .metrics-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 18px;
+        }
+
+        .metric-card {
+            background: var(--card);
+            padding: 22px;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-card);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex: 1 1 250px;
+            max-width: 300px;
+        }
+
+        .metric-card .metric-top { display: flex; align-items: center; justify-content: space-between; }
+
+        .metric-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 9px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .metric-card.entradas { border-left-color: var(--emerald); }
+        .metric-card.entradas .metric-icon { background: var(--emerald-soft); color: var(--emerald); }
+
+        .metric-card.saidas { border-left-color: var(--rust); }
+        .metric-card.saidas .metric-icon { background: var(--rust-soft); color: var(--rust); }
+
+        .metric-title {
+            font-size: 0.76rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        .metric-val { font-family: var(--font-mono); font-size: 1.5rem; font-weight: 700; }
+
+        .val-entrada { color: var(--emerald); }
+        .val-saida { color: var(--rust); }
+
+        .metric-card.total {
+            background: linear-gradient(150deg, var(--ink-800), var(--ink-900));
+            border-left: 4px solid var(--gold);
+            border-color: var(--ink-900);
+        }
+
+        .metric-card.total .metric-icon { background: rgba(247, 243, 231, 0.1); color: var(--gold-soft); }
+        .metric-card.total .metric-title { color: rgba(247, 243, 231, 0.65); }
+        .metric-card.total .metric-val { color: #F7F3E7; }
+
+        /* Grade de formulários — mesma largura e mesma altura */
+        .forms-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            align-items: stretch;
+        }
+
+        .forms-grid .card {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .forms-grid form {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .forms-grid .form-group {
+            flex: 1;
+        }
+
+        .forms-grid button.btn-primary {
+            margin-top: auto;
+        }
+
+        /* Histórico — ocupa quase toda a largura do palco, abaixo dos cards */
+        .history-card { width: 100%; }
+
+        /* Tabela de histórico */
+        .table-container { overflow-x: auto; margin-top: 4px; }
+
+        .history-subtitle {
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin: -10px 0 16px;
+        }
+
+        table { width: 100%; border-collapse: separate; border-spacing: 0 10px; }
+
+        th {
+            padding: 8px 18px 12px;
+            text-align: left;
+            color: var(--muted);
+            font-weight: 600;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            border-bottom: 2px solid var(--border);
+        }
+
+        th:nth-child(2) { text-align: right; }
+        th:nth-child(3) { text-align: center; }
+        th:nth-child(4) { text-align: right; }
+
+        td {
+            padding: 16px 18px;
+            background-color: var(--card-alt);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            vertical-align: middle;
+            transition: background-color 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        tr:hover td { background-color: #fff; box-shadow: 0 6px 16px rgba(18, 42, 33, 0.07); }
+
+        tr td:first-child {
+            border-radius: 12px 0 0 12px;
+            border-left: 4px solid var(--border);
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        tr td:last-child {
+            border-radius: 0 12px 12px 0;
+            border-right: 1px solid var(--border);
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            color: var(--muted);
+            text-align: right;
+        }
+
+        /* Coluna Valor (2ª) — alinhada à direita, colorida pelo tipo da linha.
+           Usamos a classe da linha (row-RECEITA/row-DESPESA), não a da célula,
+           porque o valor e o tipo compartilham a mesma classe vinda do JS. */
+        tr td:nth-child(2) { font-family: var(--font-mono); font-weight: 700; text-align: right; }
+        tr.row-RECEITA td:nth-child(2) { color: var(--emerald); }
+        tr.row-DESPESA td:nth-child(2) { color: var(--rust); }
+
+        /* Coluna Tipo (3ª) — vira um selo compacto e centralizado */
+        th:nth-child(3), td:nth-child(3) { width: 1%; white-space: nowrap; text-align: center; }
+
+        td.tipo-RECEITA:nth-child(3),
+        td.tipo-DESPESA:nth-child(3) {
+            padding: 6px 16px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 0.7rem;
+            letter-spacing: 0.04em;
+            border-top-color: transparent;
+            border-bottom-color: transparent;
+        }
+
+        td.tipo-RECEITA:nth-child(3) { background: rgba(30, 125, 92, 0.14); color: var(--emerald); }
+        td.tipo-DESPESA:nth-child(3) { background: rgba(182, 90, 59, 0.14); color: var(--rust); }
+
+        td.tipo-RECEITA:nth-child(3)::before { content: "↓ "; }
+        td.tipo-DESPESA:nth-child(3)::before { content: "↑ "; }
+
+        /* Ponto colorido antes da descrição, reforçando o tipo da linha */
+        tr.row-RECEITA td:first-child::before,
+        tr.row-DESPESA td:first-child::before {
+            content: "";
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        tr.row-RECEITA td:first-child { border-left-color: var(--emerald); }
+        tr.row-RECEITA td:first-child::before { background: var(--emerald); }
+
+        tr.row-DESPESA td:first-child { border-left-color: var(--rust); }
+        tr.row-DESPESA td:first-child::before { background: var(--rust); }
+
+        @media (max-width: 860px) {
+            .auth-card { flex-direction: column; }
+            .auth-visual { padding: 28px 28px 22px; }
+            .ledger-preview { display: none; }
+            .auth-visual .headline { font-size: 1.25rem; margin: 20px 0 8px; }
+            .forms-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 640px) {
+            body { padding: 20px 12px; }
+            .auth-forms { padding: 28px 24px; }
+            .form-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Símbolos SVG reutilizados via <use> -->
+    <svg style="display:none" aria-hidden="true">
+        <symbol id="i-chart" viewBox="0 0 24 24"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></symbol>
+        <symbol id="i-mail" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22 6 12 13 2 6"/></symbol>
+        <symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+        <symbol id="i-user" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+        <symbol id="i-eye" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></symbol>
+        <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.8 21.8 0 0 1 5.06-6.06M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a21.8 21.8 0 0 1-3.22 4.44"/><line x1="1" y1="1" x2="23" y2="23"/></symbol>
+        <symbol id="i-tag" viewBox="0 0 24 24"><path d="M20.59 13.41L13.42 20.59a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1"/></symbol>
+        <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></symbol>
+        <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>
+        <symbol id="i-list" viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></symbol>
+        <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M20 7H5a2 2 0 0 1 0-4h13a1 1 0 0 1 1 1z"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-8a1 1 0 0 0-1-1H16a2 2 0 0 0 0 4h5"/></symbol>
+        <symbol id="i-in" viewBox="0 0 24 24"><line x1="17" y1="7" x2="7" y2="17"/><polyline points="17 17 7 17 7 7"/></symbol>
+        <symbol id="i-out" viewBox="0 0 24 24"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></symbol>
+        <symbol id="i-history" viewBox="0 0 24 24"><path d="M3 3v5h5"/><path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"/><path d="M12 7v5l4 2"/></symbol>
+    </svg>
+
+    <div class="container">
+        <!-- TELA AUTENTICAÇÃO / CADASTRO -->
+        <div id="sec-auth" class="auth-shell">
+            <div class="auth-card">
+
+                <!-- Painel decorativo -->
+                <div class="auth-visual">
+                    <div>
+                        <div class="brand">
+                            <div class="brand-mark"><svg class="icon" style="width:22px;height:22px"><use href="#i-chart"/></svg></div>
+                            <div class="brand-text">
+                                <div class="brand-title">Painel Financeiro</div>
+                                <div class="brand-sub">Controle pessoal</div>
+                            </div>
+                        </div>
+                        <p class="headline">"Organize hoje as contas de amanhã."</p>
+                        <p class="subline">Registre receitas e despesas por categoria e acompanhe seu saldo em tempo real, num só lugar.</p>
+                    </div>
+
+                    <div class="ledger-preview">
+                        <div class="ledger-caption">Exemplo ilustrativo</div>
+                        <div class="ledger-row"><span>Salário</span><span class="amt-in">+ R$ 4.500,00</span></div>
+                        <div class="ledger-row"><span>Aluguel</span><span class="amt-out">− R$ 1.200,00</span></div>
+                        <div class="ledger-row"><span>Investimentos</span><span class="amt-in">+ R$ 350,00</span></div>
+                    </div>
+                </div>
+
+                <!-- Formulários -->
+                <div class="auth-forms">
+                    <div class="tab-buttons">
+                        <button class="tab-btn active" onclick="alternarAba('login')">Login</button>
+                        <button class="tab-btn" onclick="alternarAba('cadastro')">Cadastrar-se</button>
+                    </div>
+
+                    <form id="form-login">
+                        <h2>Acessar conta</h2>
+                        <p class="form-subtitle">Informe suas credenciais para continuar.</p>
+                        <div class="form-group">
+                            <div class="field">
+                                <label class="field-label" for="login-email">E-mail</label>
+                                <div class="input-wrap">
+                                    <svg class="icon"><use href="#i-mail"/></svg>
+                                    <input type="email" id="login-email" placeholder="voce@email.com" required>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label class="field-label" for="login-senha">Senha</label>
+                                <div class="input-wrap">
+                                    <svg class="icon"><use href="#i-lock"/></svg>
+                                    <input type="password" id="login-senha" placeholder="••••••••" required>
+                                    <button type="button" class="pwd-toggle" onclick="togglePwd(this)" aria-label="Mostrar senha">
+                                        <svg class="icon"><use href="#i-eye"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-primary">Entrar</button>
+                        </div>
+                    </form>
+
+                    <form id="form-cadastro" class="hidden">
+                        <h2>Criar nova conta</h2>
+                        <p class="form-subtitle">Leva menos de um minuto.</p>
+                        <div class="form-group">
+                            <div class="field">
+                                <label class="field-label" for="cad-nome">Nome completo</label>
+                                <div class="input-wrap">
+                                    <svg class="icon"><use href="#i-user"/></svg>
+                                    <input type="text" id="cad-nome" placeholder="Seu nome" required>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label class="field-label" for="cad-email">E-mail principal</label>
+                                <div class="input-wrap">
+                                    <svg class="icon"><use href="#i-mail"/></svg>
+                                    <input type="email" id="cad-email" placeholder="voce@email.com" required>
+                                </div>
+                            </div>
+                            <div class="field">
+                                <label class="field-label" for="cad-senha">Senha</label>
+                                <div class="input-wrap">
+                                    <svg class="icon"><use href="#i-lock"/></svg>
+                                    <input type="password" id="cad-senha" placeholder="Crie uma senha" required>
+                                    <button type="button" class="pwd-toggle" onclick="togglePwd(this)" aria-label="Mostrar senha">
+                                        <svg class="icon"><use href="#i-eye"/></svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-primary">Cadastrar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAINEL PRINCIPAL -->
+        <div id="sec-app" class="hidden app-shell">
+
+            <div class="dash-narrow">
+                <div class="app-header">
+                    <div class="brand">
+                        <div class="brand-mark"><svg class="icon" style="width:22px;height:22px"><use href="#i-chart"/></svg></div>
+                        <div class="brand-text">
+                            <div class="brand-title">Painel Financeiro</div>
+                            <div class="brand-sub">Visão geral</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARDS DE VISÃO GERAL -->
+                <div class="metrics-grid">
+                    <div class="metric-card entradas">
+                        <div class="metric-top">
+                            <span class="metric-title">Receitas</span>
+                            <span class="metric-icon"><svg class="icon"><use href="#i-in"/></svg></span>
+                        </div>
+                        <span id="total-entradas" class="metric-val val-entrada">+ R$ 0,00</span>
+                    </div>
+                    <div class="metric-card saidas">
+                        <div class="metric-top">
+                            <span class="metric-title">Despesas</span>
+                            <span class="metric-icon"><svg class="icon"><use href="#i-out"/></svg></span>
+                        </div>
+                        <span id="total-saidas" class="metric-val val-saida">- R$ 0,00</span>
+                    </div>
+                    <div class="metric-card total">
+                        <div class="metric-top">
+                            <span class="metric-title">Saldo total</span>
+                            <span class="metric-icon"><svg class="icon"><use href="#i-wallet"/></svg></span>
+                        </div>
+                        <span id="saldo-total" class="metric-val">R$ 0,00</span>
+                    </div>
+                </div>
+
+                <div class="forms-grid">
+                    <!-- CADASTRO MANUAL DE CATEGORIA -->
+                    <div class="card">
+                        <div class="card-head">
+                            <span class="icon-badge"><svg class="icon"><use href="#i-tag"/></svg></span>
+                            <h2>Criar nova categoria</h2>
+                        </div>
+                        <form id="form-categoria">
+                            <div class="form-group">
+                                <div class="field">
+                                    <label class="field-label" for="cat-nome">Nome da categoria</label>
+                                    <div class="input-wrap">
+                                        <svg class="icon"><use href="#i-tag"/></svg>
+                                        <input type="text" id="cat-nome" placeholder="Ex: Salário, Mercado" required>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <label class="field-label" for="cat-tipo">Tipo</label>
+                                    <div class="input-wrap">
+                                        <svg class="icon"><use href="#i-list"/></svg>
+                                        <select id="cat-tipo" required>
+                                            <option value="RECEITA">Receita</option>
+                                            <option value="DESPESA">Despesa</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn-primary">Criar categoria</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- NOVA TRANSAÇÃO -->
+                    <div class="card">
+                        <div class="card-head">
+                            <span class="icon-badge"><svg class="icon"><use href="#i-file"/></svg></span>
+                            <h2>Nova transação</h2>
+                        </div>
+                        <form id="form-transacao">
+                            <div class="form-group">
+                                <div class="field">
+                                    <label class="field-label" for="tx-desc">Descrição</label>
+                                    <div class="input-wrap">
+                                        <svg class="icon"><use href="#i-file"/></svg>
+                                        <input type="text" id="tx-desc" placeholder="Ex: Supermercado" required>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="field">
+                                        <label class="field-label" for="tx-valor">Valor</label>
+                                        <div class="input-wrap currency">
+                                            <span class="prefix">R$</span>
+                                            <input type="number" step="0.01" id="tx-valor" placeholder="0,00" required>
+                                        </div>
+                                    </div>
+                                    <div class="field">
+                                        <label class="field-label" for="tx-data">Data</label>
+                                        <div class="input-wrap">
+                                            <svg class="icon"><use href="#i-calendar"/></svg>
+                                            <input type="date" id="tx-data" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="field">
+                                        <label class="field-label" for="tx-tipo">Tipo</label>
+                                        <div class="input-wrap">
+                                            <svg class="icon"><use href="#i-list"/></svg>
+                                            <select id="tx-tipo" required>
+                                                <option value="RECEITA">Receita</option>
+                                                <option value="DESPESA">Despesa</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="field">
+                                        <label class="field-label" for="tx-cat">Categoria</label>
+                                        <div class="input-wrap">
+                                            <svg class="icon"><use href="#i-tag"/></svg>
+                                            <select id="tx-cat" required>
+                                                <option value="">Selecione uma categoria...</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn-primary">Salvar transação</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HISTÓRICO — mais largo, logo abaixo dos cards -->
+            <div class="card history-card">
+                <div class="card-head">
+                    <span class="icon-badge"><svg class="icon"><use href="#i-history"/></svg></span>
+                    <h2>Histórico de transações</h2>
+                </div>
+                <p class="history-subtitle">Suas receitas e despesas mais recentes, em ordem.</p>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Descrição</th>
+                                <th>Valor</th>
+                                <th>Tipo</th>
+                                <th>Data</th>
+                            </tr>
+                        </thead>
+                        <tbody id="lista-transacoes"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8080/api';
+        let usuarioIdLogado = null;
+
+        function alternarAba(aba) {
+            const btns = document.querySelectorAll('.tab-btn');
+            btns[0].classList.toggle('active', aba === 'login');
+            btns[1].classList.toggle('active', aba === 'cadastro');
+
+            document.getElementById('form-login').classList.toggle('hidden', aba !== 'login');
+            document.getElementById('form-cadastro').classList.toggle('hidden', aba !== 'cadastro');
+        }
+
+        // Alterna a visibilidade da senha (apenas cosmético, não afeta a lógica de autenticação)
+        function togglePwd(btn) {
+            const input = btn.previousElementSibling;
+            const use = btn.querySelector('use');
+            const showing = input.type === 'text';
+            input.type = showing ? 'password' : 'text';
+            use.setAttribute('href', showing ? '#i-eye' : '#i-eye-off');
+        }
+
+        // CADASTRO DE USUÁRIO
+        document.getElementById('form-cadastro').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                nome: document.getElementById('cad-nome').value,
+                emailPrincipal: document.getElementById('cad-email').value,
+                senha: document.getElementById('cad-senha').value
+            };
+
+            try {
+                const res = await fetch(`${API_URL}/usuarios`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) {
+                    const errData = await res.json();
+                    throw new Error(errData.mensagem || 'Erro ao realizar cadastro');
+                }
+
+                alert('Cadastro realizado com sucesso! Faça login para continuar.');
+                document.getElementById('form-cadastro').reset();
+                alternarAba('login');
+            } catch (err) {
+                alert(err.message);
+            }
+        });
+
+        // LOGIN
+        document.getElementById('form-login').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const senha = document.getElementById('login-senha').value;
+
+            try {
+                const res = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, senha })
+                });
+
+                if (!res.ok) throw new Error('Falha no login');
+                const data = await res.json();
+
+                usuarioIdLogado = data.usuarioId;
+
+                document.getElementById('sec-auth').classList.add('hidden');
+                document.getElementById('sec-app').classList.remove('hidden');
+
+                carregarDados();
+                carregarCategorias();
+            } catch (err) {
+                alert('Erro ao autenticar: Verifique os dados de acesso.');
+            }
+        });
+
+        // CRIAR MANUAMENTE UMA CATEGORIA
+        document.getElementById('form-categoria').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const nome = document.getElementById('cat-nome').value;
+            const tipo = document.getElementById('cat-tipo').value;
+
+            try {
+                const res = await fetch(`${API_URL}/categorias`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Usuario-Id': usuarioIdLogado
+                    },
+                    body: JSON.stringify({
+                        nome: nome,
+                        descricao: nome,
+                        tipo: tipo
+                    })
+                });
+
+                if (!res.ok) throw new Error('Erro ao criar categoria');
+
+                alert('Categoria criada com sucesso!');
+                document.getElementById('form-categoria').reset();
+                carregarCategorias();
+            } catch (err) {
+                alert(err.message);
+            }
+        });
+
+        // CARREGAR E FILTRAR CATEGORIAS POR TIPO
+        async function carregarCategorias() {
+            const selectCat = document.getElementById('tx-cat');
+            const tipoSelecionado = document.getElementById('tx-tipo').value;
+
+            try {
+                const res = await fetch(`${API_URL}/categorias`, {
+                    headers: { 'X-Usuario-Id': usuarioIdLogado }
+                });
+
+                let categorias = await res.json();
+
+                let categoriasFiltradas = Array.isArray(categorias)
+                    ? categorias.filter(c => c.tipo === tipoSelecionado)
+                    : [];
+
+                selectCat.innerHTML = '';
+
+                if (categoriasFiltradas.length === 0) {
+                    selectCat.innerHTML = `<option value="">Nenhuma categoria de ${tipoSelecionado} cadastrada</option>`;
+                    return;
+                }
+
+                categoriasFiltradas.forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat.id;
+                    option.textContent = cat.nome || cat.descricao || `Categoria ${cat.id}`;
+                    selectCat.appendChild(option);
+                });
+            } catch (err) {
+                selectCat.innerHTML = '<option value="">Erro ao carregar categorias</option>';
+            }
+        }
+
+        document.getElementById('tx-tipo').addEventListener('change', carregarCategorias);
+
+        // CARREGAR SALDO E TRANSAÇÕES
+        async function carregarDados() {
+            if (!usuarioIdLogado) return;
+
+            const resSaldo = await fetch(`${API_URL}/transacoes/saldo`, {
+                headers: { 'X-Usuario-Id': usuarioIdLogado }
+            });
+            const saldo = await resSaldo.json();
+            document.getElementById('saldo-total').innerText = `R$ ${parseFloat(saldo).toFixed(2)}`;
+
+            const resTx = await fetch(`${API_URL}/transacoes`, {
+                headers: { 'X-Usuario-Id': usuarioIdLogado }
+            });
+            const transacoes = await resTx.json();
+
+            const tbody = document.getElementById('lista-transacoes');
+            tbody.innerHTML = '';
+
+            let somaEntradas = 0;
+            let somaSaidas = 0;
+
+            transacoes.forEach(t => {
+                const val = parseFloat(t.valor);
+                if (t.tipo === 'RECEITA') somaEntradas += val;
+                if (t.tipo === 'DESPESA') somaSaidas += val;
+
+                const tr = document.createElement('tr');
+                tr.className = `row-${t.tipo}`;
+                tr.innerHTML = `
+                    <td>${t.descricao}</td>
+                    <td class="tipo-${t.tipo}">${t.tipo === 'RECEITA' ? '+' : '-'} R$ ${val.toFixed(2)}</td>
+                    <td class="tipo-${t.tipo}">${t.tipo}</td>
+                    <td>${t.data}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('total-entradas').innerText = `+ R$ ${somaEntradas.toFixed(2)}`;
+            document.getElementById('total-saidas').innerText = `- R$ ${somaSaidas.toFixed(2)}`;
+        }
+
+        // SALVAR TRANSAÇÃO
+        document.getElementById('form-transacao').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const categoriaId = document.getElementById('tx-cat').value;
+            if (!categoriaId) {
+                alert('Por favor, crie/selecione uma categoria válida primeiro.');
+                return;
+            }
+
+            const payload = {
+                descricao: document.getElementById('tx-desc').value,
+                valor: parseFloat(document.getElementById('tx-valor').value),
+                data: document.getElementById('tx-data').value,
+                tipo: document.getElementById('tx-tipo').value,
+                categoriaId: parseInt(categoriaId)
+            };
+
+            try {
+                const res = await fetch(`${API_URL}/transacoes`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Usuario-Id': usuarioIdLogado
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) {
+                    const errData = await res.json();
+                    throw new Error(errData.mensagem || 'Erro ao registrar transação');
+                }
+
+                document.getElementById('form-transacao').reset();
+                carregarDados();
+            } catch (err) {
+                alert(err.message);
+            }
+        });
+    </script>
+</body>
+</html>
