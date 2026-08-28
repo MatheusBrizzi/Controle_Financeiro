@@ -70,16 +70,22 @@ O frontend é 100% estático (HTML, CSS e JavaScript puro, sem frameworks ou bui
 
 ### Pré-requisitos
 
-- [Java 17+](https://adoptium.net/) e [Maven](https://maven.apache.org/) (ou o wrapper `mvnw` incluso no projeto do backend)
+- [Java 17+](https://adoptium.net/) e [Maven](https://maven.apache.org/) (ou o wrapper `mvnw` incluso no projeto)
 - Um navegador atualizado
 - (Opcional) uma extensão como o [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) para servir o frontend
 
 ### 1. Backend (Spring Boot)
 
-```bash
+No PowerShell (Windows):
+
+```powershell
+$env:DB_USER="root"
+$env:DB_PASSWORD="SUA_SENHA"
+
 cd SEU_DIRETORIO
-./mvnw spring-boot:run
-```
+.\mvnw spring-boot:run
+
+````
 
 A API sobe por padrão em `http://localhost:8080`.
 
