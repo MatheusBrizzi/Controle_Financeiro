@@ -1,12 +1,22 @@
- # 💰 Painel Financeiro
+ # 💰 Controle Financeiro
 
 Aplicação web para controle financeiro pessoal: cadastro de usuários, categorias de receitas/despesas, lançamento de transações e acompanhamento de saldo em tempo real.
 
-![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white)
-![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat&logo=css3&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)
-![Java](https://img.shields.io/badge/Java-ED8B00?style=flat&logo=openjdk&logoColor=white)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-6DB33F?style=flat&logo=springboot&logoColor=white)
+
+---
+
+## Tecnologias utilizadas
+<div align="left">
+   <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" height="40" alt="html5 logo"  />
+  <img width="12" />
+   <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" height="40" alt="css logo"  />
+  <img width="12" />
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" height="40" alt="javascript logo"  />
+  <img width="12" />
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/java/java-original.svg" height="40" alt="java logo" />
+  <img width="12" />
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/spring/spring-original.svg" height="40" alt="spring boot logo" />
+</div>
 
 
 ---
@@ -14,16 +24,10 @@ Aplicação web para controle financeiro pessoal: cadastro de usuários, categor
 ## 📌 Índice
 
 - [Sobre o projeto](#-sobre-o-projeto)
-- [Screenshots](#-screenshots)
+- [Fotos do projeto](#️-fotos-do-projeto)
 - [Funcionalidades](#-funcionalidades)
-- [Tecnologias](#-tecnologias)
-- [Estrutura do projeto](#-estrutura-do-projeto)
 - [Como executar](#-como-executar)
-- [API — endpoints consumidos](#-api--endpoints-consumidos)
-- [Modelo de dados](#-modelo-de-dados)
-- [Roadmap](#-roadmap)
 - [Contribuindo](#-contribuindo)
-- [Licença](#-licença)
 - [Autor](#-autor)
 
 ---
@@ -40,15 +44,11 @@ O frontend é 100% estático (HTML, CSS e JavaScript puro, sem frameworks ou bui
 
 ---
 
-## 🖼️ Screenshots
+## 🖼️ Fotos do Projeto
 
-> Substitua os links abaixo pelas imagens reais do projeto (pasta `/docs` ou `/screenshots`, por exemplo).
-
-| Login | Painel principal |
-
-| Tela de login(<img width="1907" height="896" alt="Screenshot 2026-08-27 233833" src="https://github.com/user-attachments/assets/86fac4d4-73a0-4ba0-a219-32088f83884c" />
-) | ![Painel principal](<img width="1889" height="903" alt="Screenshot 2026-08-27 233944" src="https://github.com/user-attachments/assets/c944223d-8fa6-414e-aac9-d75d614fd627" />
-)
+| Login | Painel Principal |
+| :---: | :---: |
+| <img src="https://github.com/user-attachments/assets/86fac4d4-73a0-4ba0-a219-32088f83884c" width="400" alt="Tela de Login"> | <img src="https://github.com/user-attachments/assets/c944223d-8fa6-414e-aac9-d75d614fd627" width="400" alt="Painel Principal"> |
 
 ---
 
@@ -64,25 +64,7 @@ O frontend é 100% estático (HTML, CSS e JavaScript puro, sem frameworks ou bui
 
 ---
 
-## 🛠️ Tecnologias
 
-**Frontend**
-- HTML5 semântico
-- CSS3 (variáveis nativas, Grid e Flexbox — sem frameworks de UI)
-- JavaScript (Fetch API, vanilla, sem dependências)
-- Google Fonts: [Fraunces](https://fonts.google.com/specimen/Fraunces), [Inter](https://fonts.google.com/specimen/Inter) e [JetBrains Mono](https://fonts.google.com/specimen/JetBrains+Mono)
-
-**Backend**
-- Java
-- Spring Boot (API REST)
-
-> O frontend não depende de nenhuma ferramenta de build (Webpack, Vite, npm, etc.) — é HTML puro, aberto direto no navegador ou servido por qualquer servidor estático.
-
-
-
-> Ajuste esta árvore para refletir a organização real do seu repositório (por exemplo, se o backend estiver em outro repositório separado).
-
----
 
 ## 🚀 Como executar
 
@@ -121,7 +103,7 @@ Contribuições são bem-vindas! Para contribuir:
 
 ## 👤 Autor
 
-Desenvolvido por **[Matheus_Brizzi]**
+Desenvolvido por **Matheus Brizzi**
 
-[![GitHub](https://img.shields.io/badge/GitHub-100000?style=flat&logo=github&logoColor=white)](https://github.com/seu-usuario)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=flat&logo=linkedin&logoColor=white)](https://linkedin.com/in/seu-usuario)
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=flat&logo=github&logoColor=white)](https://github.com/MatheusBrizzi)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=flat&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/matheus-brizzi-956b29268/)
