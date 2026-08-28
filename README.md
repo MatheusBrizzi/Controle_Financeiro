@@ -45,10 +45,10 @@ O frontend é 100% estático (HTML, CSS e JavaScript puro, sem frameworks ou bui
 > Substitua os links abaixo pelas imagens reais do projeto (pasta `/docs` ou `/screenshots`, por exemplo).
 
 | Login | Painel principal |
-|---|---|
-| ![Tela de login](<img width="1907" height="896" alt="Screenshot 2026-08-27 233833" src="https://github.com/user-attachments/assets/86fac4d4-73a0-4ba0-a219-32088f83884c" />
+
+| Tela de login(<img width="1907" height="896" alt="Screenshot 2026-08-27 233833" src="https://github.com/user-attachments/assets/86fac4d4-73a0-4ba0-a219-32088f83884c" />
 ) | ![Painel principal](<img width="1889" height="903" alt="Screenshot 2026-08-27 233944" src="https://github.com/user-attachments/assets/c944223d-8fa6-414e-aac9-d75d614fd627" />
-) |
+)
 
 ---
 
