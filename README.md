@@ -48,7 +48,7 @@ O frontend é 100% estático (HTML, CSS e JavaScript puro, sem frameworks ou bui
 
 | Login | Painel Principal | Gráfico
 | :---: | :---: | :---: |
-| <img src="https://github.com/user-attachments/assets/86fac4d4-73a0-4ba0-a219-32088f83884c" width="400" alt="Tela de Login"> | <img src="https://github.com/user-attachments/assets/c944223d-8fa6-414e-aac9-d75d614fd627" width="400" alt="Painel Principal"> | <img src="https://github.com/user-attachments/assets/c944223d-8fa6-414e-aac9-d75d614fd627" width="400" alt="Painel Principal"> |
+| <img src="imagens/login.png" width="400" alt="Tela de Login">| <img src="https://github.com/user-attachments/assets/c944223d-8fa6-414e-aac9-d75d614fd627" width="400" alt="Painel Principal"> | <img src="https://github.com/user-attachments/assets/c944223d-8fa6-414e-aac9-d75d614fd627" width="400" alt="Painel Principal"> |
 
 ---
 
